@@ -48,11 +48,12 @@ services:
     network_mode: host
     restart: "no"
 
-#  create-table:
-#    image: apacheignite/ignite:3.1.0
-#    depends_on:
-#      cluster-init:
-#        condition: service_completed_successfully
-#    command: ["cli", "table", "create", "--name=mytable", "--columns=id:int, name:string", "--primary-key=id"]
-#    network_mode: host
-#    restart: "no"
+  # docker run --rm -it --network=host apacheignite/ignite:3.1.0 cli sql 'create table if not exists ASPNET_DISTRIBUTED_CACHE (KEY VARCHAR PRIMARY KEY, "VALUE" VARBINARY)'
+  create-table:
+    image: apacheignite/ignite:3.1.0
+    depends_on:
+      cluster-init:
+        condition: service_completed_successfully
+    command: ["cli", "sql", "'create table if not exists ASPNET_DISTRIBUTED_CACHE (KEY VARCHAR PRIMARY KEY, \"VALUE\" VARBINARY)'"]
+    network_mode: host
+    restart: "no"
