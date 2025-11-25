@@ -25,7 +25,7 @@
                     "engine": "aimem",
                     "initSizeBytes": 268435456,
                     "maxSizeBytes": 268435456,
-                    "name": "default_aimem"
+                    "name": "inmem"
                 }
             ]
         }
