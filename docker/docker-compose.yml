@@ -54,6 +54,6 @@ services:
     depends_on:
       cluster-init:
         condition: service_completed_successfully
-    command: ["cli", "sql", "'create table if not exists ASPNET_DISTRIBUTED_CACHE (KEY VARCHAR PRIMARY KEY, \"VALUE\" VARBINARY)'"]
+    command: ["cli", "sql", "create table if not exists ASPNET_DISTRIBUTED_CACHE (KEY VARCHAR PRIMARY KEY, \"VALUE\" VARBINARY)"]
     network_mode: host
     restart: "no"
