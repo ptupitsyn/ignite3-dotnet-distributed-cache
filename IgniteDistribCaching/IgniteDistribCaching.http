@@ -4,3 +4,8 @@ GET {{IgniteDistribCaching_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###
+
+GET {{IgniteDistribCaching_HostAddress}}/weatherforecast_hybrid/
+Accept: application/json
+
+###

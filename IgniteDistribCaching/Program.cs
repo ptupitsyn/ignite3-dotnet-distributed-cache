@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Apache.Extensions.Caching.Ignite;
 using Apache.Ignite;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Hybrid;
 
@@ -13,7 +14,8 @@ builder.Services
     })
     .AddIgniteDistributedCache(options =>
         // Table is created automatically if it does not exist
-        options.TableName = "ASPNET_DISTRIBUTED_CACHE");
+        options.TableName = "ASPNET_DISTRIBUTED_CACHE")
+    .AddHybridCache();
 
 var app = builder.Build();
 
