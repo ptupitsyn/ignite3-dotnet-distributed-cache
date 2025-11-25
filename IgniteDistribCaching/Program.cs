@@ -2,6 +2,7 @@ using System.Text.Json;
 using Apache.Extensions.Caching.Ignite;
 using Apache.Ignite;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Hybrid;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,24 +19,35 @@ var app = builder.Build();
 
 app.UseHttpsRedirection();
 
-app.MapGet("/weatherforecast",  async (IDistributedCache cache) =>
+app.MapGet("/weatherforecast", async (IDistributedCache cache) =>
+{
+    const string cacheKey = "weather_forecast";
+
+    byte[]? cachedData = await cache.GetAsync(cacheKey);
+    if (cachedData != null)
     {
-        const string cacheKey = "weather_forecast";
+        return JsonSerializer.Deserialize<IList<WeatherForecast>>(cachedData);
+    }
 
-        byte[]? cachedData = await cache.GetAsync(cacheKey);
-        if (cachedData != null)
-        {
-            return JsonSerializer.Deserialize<IList<WeatherForecast>>(cachedData);
-        }
+    await Task.Delay(1000); // Simulate slow data source
+    IList<WeatherForecast> forecast = FetchForecast();
 
-        IList<WeatherForecast> forecast = FetchForecast();
+    cachedData = JsonSerializer.SerializeToUtf8Bytes(forecast);
+    await cache.SetAsync(cacheKey, cachedData, CancellationToken.None);
 
-        cachedData = JsonSerializer.SerializeToUtf8Bytes(forecast);
-        await cache.SetAsync(cacheKey, cachedData, CancellationToken.None);
+    return forecast;
+});
 
-        return forecast;
-    })
-    .WithName("GetWeatherForecast");
+app.MapGet("/weatherforecast_hybrid", async (HybridCache cache) =>
+{
+    const string cacheKey = "weather_forecast_hybrid";
+
+    return await cache.GetOrCreateAsync(cacheKey, async _ =>
+    {
+        await Task.Delay(1000); // Simulate slow data source
+        return FetchForecast();
+    });
+});
 
 app.Run();
 
