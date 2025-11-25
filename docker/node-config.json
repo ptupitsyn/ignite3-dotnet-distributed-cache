@@ -1,0 +1,17 @@
+{
+    "ignite": {
+        "network": {
+            "port": 3344,
+            "nodeFinder": {
+                "netClusterNodes": [
+                    "node1:3344",
+                    "node2:3344",
+                    "node3:3344"
+                ]
+            }
+        },
+        "clientConnector": {
+            "sendServerExceptionStackTraceToClient": true
+        }
+    }
+}
