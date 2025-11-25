@@ -10,7 +10,9 @@ builder.Services
     {
         ClientConfiguration = new IgniteClientConfiguration("localhost")
     })
-    .AddIgniteDistributedCache(options => options.TableName = "ASPNET_DISTRIBUTED_CACHE");
+    .AddIgniteDistributedCache(options =>
+        // Table is created automatically if it does not exist
+        options.TableName = "ASPNET_DISTRIBUTED_CACHE");
 
 var app = builder.Build();
 
