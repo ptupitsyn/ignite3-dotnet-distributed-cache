@@ -48,3 +48,11 @@ services:
     network_mode: host
     restart: "no"
 
+#  create-table:
+#    image: apacheignite/ignite:3.1.0
+#    depends_on:
+#      cluster-init:
+#        condition: service_completed_successfully
+#    command: ["cli", "table", "create", "--name=mytable", "--columns=id:int, name:string", "--primary-key=id"]
+#    network_mode: host
+#    restart: "no"
