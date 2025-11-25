@@ -1,0 +1,49 @@
+version: "3.9"
+
+name: ignite3
+
+x-ignite-def:
+  &ignite-def
+  image: apacheignite/ignite:3.1.0
+  volumes:
+    - ./node-config.json:/opt/ignite/etc/ignite-config.conf
+  healthcheck:
+    test: [ "CMD", "docker-entrypoint.sh", "cli", "node", "status" ]
+    interval: 1s
+    timeout: 10s
+    retries: 10
+
+services:
+  node1:
+    << : *ignite-def
+    command: --node-name node1
+    ports:
+      - 10300:10300
+      - 10800:10800
+  node2:
+    << : *ignite-def
+    command: --node-name node2
+    ports:
+      - 10301:10300
+      - 10801:10800
+  node3:
+    << : *ignite-def
+    command: --node-name node3
+    ports:
+      - 10302:10300
+      - 10802:10800
+
+  # Init cluster:
+  # docker run --rm -it --network=host apacheignite/ignite:3.1.0 cli cluster init --name=mycluster
+  cluster-init:
+    image: apacheignite/ignite:3.1.0
+    depends_on:
+      node1:
+        condition: service_healthy
+      node2:
+        condition: service_healthy
+      node3:
+        condition: service_healthy
+    command: ["cli", "cluster", "init", "--name=mycluster"]
+    network_mode: host
+    restart: "no"
