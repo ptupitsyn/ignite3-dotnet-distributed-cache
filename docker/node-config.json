@@ -12,6 +12,22 @@
         },
         "clientConnector": {
             "sendServerExceptionStackTraceToClient": true
+        },
+        "storage": {
+            "profiles": [
+                {
+                    "engine": "aipersist",
+                    "name": "default",
+                    "replacementMode": "CLOCK",
+                    "sizeBytes": 268435456
+                },
+                {
+                    "engine": "aimem",
+                    "initSizeBytes": 268435456,
+                    "maxSizeBytes": 268435456,
+                    "name": "default_aimem"
+                }
+            ]
         }
     }
 }
