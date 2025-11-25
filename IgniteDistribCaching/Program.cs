@@ -1,13 +1,37 @@
+using System.Text.Json;
+using Apache.Extensions.Caching.Ignite;
+using Apache.Ignite;
+using Microsoft.Extensions.Caching.Distributed;
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services
+    .AddIgniteClientGroup(new IgniteClientGroupConfiguration
+    {
+        ClientConfiguration = new IgniteClientConfiguration("localhost")
+    })
+    .AddIgniteDistributedCache(options => options.TableName = "ASPNET_DISTRIBUTED_CACHE");
 
 var app = builder.Build();
 
 app.UseHttpsRedirection();
 
-app.MapGet("/weatherforecast", () =>
+app.MapGet("/weatherforecast",  async (IDistributedCache cache) =>
     {
-        // TODO: Cache me.
-        return FetchForecast();
+        const string cacheKey = "weather_forecast";
+
+        byte[]? cachedData = await cache.GetAsync(cacheKey);
+        if (cachedData != null)
+        {
+            return JsonSerializer.Deserialize<IList<WeatherForecast>>(cachedData);
+        }
+
+        IList<WeatherForecast> forecast = FetchForecast();
+
+        cachedData = JsonSerializer.SerializeToUtf8Bytes(forecast);
+        await cache.SetAsync(cacheKey, cachedData, CancellationToken.None);
+
+        return forecast;
     })
     .WithName("GetWeatherForecast");
 
